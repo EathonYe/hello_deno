@@ -1,6 +1,10 @@
 import { Plug } from "https://x.nest.land/plug@0.0.4/mod.ts";
 import { join } from "https://deno.land/x/std@0.68.0/path/mod.ts";
 
+const VERSION = '0.1.0'
+const HELLO_PLUG_URL = join(Deno.cwd(), '/target/release')
+// const HELLO_PLUG_URL = `https://github.com/EathonYe/hello_deno/releases/download/${VERSION}/`
+
 export interface Response<T> {
   err?: string,
   ok?: T
@@ -12,7 +16,6 @@ export interface Result {
 
 let pluginId: number | null = null;
 
-const HELLO_PLUG_URL = join(Deno.cwd(), '/target/release')
 
 /**
  * Load the plugin
@@ -20,7 +23,7 @@ const HELLO_PLUG_URL = join(Deno.cwd(), '/target/release')
 export async function load(cache: boolean) {
   unload();
   pluginId = await Plug.prepare({
-    name: "hello_mod",
+    name: "hello_deno",
     url: HELLO_PLUG_URL,
     policy: cache ? Plug.CachePolicy.STORE : Plug.CachePolicy.NONE,
   });
