@@ -1,6 +1,12 @@
 # hello_deno
 
-一个简单的rust库，提供了hello方法，能够被deno调用。主要是研究deno如何调用一个rust插件，参考了[webview_deno](https://github.com/webview/webview_deno)。
+一个简单的rust库，提供了hello方法，能够被deno调用。主要是研究deno如何调用一个rust插件，参考了[webview_deno](https://github.com/webview/webview_deno)和[plug](https://github.com/denosaurs/plug)。
+
+
+主要是调用了`Deno.openPlugin(filePath)`，在插件中注册到`deno`中的方法都可以在`Deno.core.ops()`中得到一个`opId`，通过`Deno.core.dispatch(opId, msg)`可以将消息发送给rust插件中的方法。
+
+如果希望该调用是异步的，可以先调用`Deno.core.setAsyncHandler(opId, (response) => promise.resolve(decode(response) as R))`，然后调用`Deno.core.dispatch(opId, msg)`，最后将promise返回。
+
 
 ## Example
 
@@ -12,6 +18,7 @@ hello('world')
 ```
 
 ## Steps
+
 * 创建一个rust库：`cargo new --lib <name>`。
 * 引入一些依赖，必须的是`deno_core`。
 * 提供`deno_plugin_init`方法以被调用，并在其中注册可被调用的方法：
@@ -35,4 +42,4 @@ crate-type = ["cdylib"]
 ```bash
 $ cargo clean && cargo build --release
 ```
-在国内下载会很慢，可以修改`cargo`的镜像源；由于`deno_core`依赖了`rusty_v8`，而`rusty_v8`编译很慢，具体可以参考[rusty_v8](https://github.com/denoland/rusty_v8)。
+在国内下载会很慢，可以修改`cargo`的镜像源；由于`deno_core`依赖了`rusty_v8`，而`rusty_v8`编译很慢，具体可以参考[rusty_v8 Q&A](https://github.com/denoland/rusty_v8)。
